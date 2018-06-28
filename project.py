@@ -2,18 +2,19 @@
 Python for Data Analysis and Scientific Computing 
 Annie Robison
 
-In this project, three of my passions intersect‒music, coding, and math. I will 
-attempt to answer the question: how can you detect pitch from audio using Python?
-I plan to load simple piano audio into Python. I will then take a FFT of the data,
-and estimate the frequency using the peak of the FFT. I will then use this 
-frequency to determine the note. To visualize the audio data, I will also use 
-matplotlib. Depending on how successful the FFT approach proves to be, I may 
-also explore other methods for detecting the pitch, such as autocorrelation, 
-average magnitude difference, and average squared difference.
+In this project, three of my passions intersect‒music, coding, and math. I attempt
+to answer the question: how can you detect pitch from audio using Python?
+First, the program asks you to enter a filename (ex. audio/moon.wav) to load some
+simple piano audio. It uses librosa to detect onsets, validates these offsets,
+then uses the fft to find the most powerful frequency for each note 
+(get_frequency_fft). It then uses a formula to determine the note from the 
+frequency (note_from_freq). It also creates a trimmed audio file, removing data 
+outside the valid onsets (trim_audio). This function also plays the trimmed audio. 
+To visualize the data, the program plots the amplitude vs time as well as the 
+power vs frequency (display_plots). 
 """
 
 import scipy as sp
-import scipy.signal
 from scipy.io import wavfile
 import numpy as np
 import pylab as plt
@@ -43,8 +44,8 @@ def get_frequency_fft(data,rate):
     #find the frequency with the max power in dB
     maxi = np.argmax(10 * np.log10(f))
     return freq_array[maxi]
-
-
+    
+    
 def note_from_freq(freq):
     """Return a note from its frequency"""
     #using A4 / 440 as base
@@ -131,6 +132,7 @@ def display_plots(data,rate,raw_onsets,onsets,frequencies,filename):
     plt.plot(freqArray, 10*np.log10(f), color='black')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Power (dB)')
+    #limit x axis to lowest multiple of 500 that contains our note frequencies
     plt.xlim(0,math.ceil(max(frequencies) / 500.0) * 500.0)
     
     figManager = plt.get_current_fig_manager()
